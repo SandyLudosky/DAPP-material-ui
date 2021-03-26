@@ -1,0 +1,14 @@
+{
+  "name": "multiple-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.2.3",
+    "dotenv": "^8.2.0",
+    "react-window": "^1.8.6"
+  },
+  "scripts": {
+    "start": "cd client && npm start",
+    "install-pkg": "npm install && cd client && npm install && cd .."
+  }
+}
