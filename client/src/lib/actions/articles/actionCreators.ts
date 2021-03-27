@@ -48,14 +48,13 @@ const mapArticles = (count: number, contract: any) =>
   });
 
 export const add = (article: IArticleInput) => {
+  const args = Object.values(article);
   return (dispatch: DispatchType, { instances: { Article }, admin }: any) => {
     dispatch(transactionPending());
     Article.methods
-      .write(article.date, article.title, article.content)
+      .write(...args)
       .send({ from: admin })
-      .then(() => {
-        dispatch(transactionSuccess());
-      })
+      .then(() => dispatch(transactionSuccess()))
       .catch(transactionError);
   };
 };
@@ -66,9 +65,7 @@ export const remove = (index: number) => {
     Article.methods
       .remove(index)
       .send({ from: admin })
-      .then(() => {
-        dispatch(transactionSuccess());
-      })
+      .then(() => dispatch(transactionSuccess()))
       .catch(transactionError);
   };
 };

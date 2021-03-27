@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { connect, ConnectedProps } from "react-redux";
+import { connect } from "react-redux";
 import { remove, getArticles } from "../lib/actions/articles/actionCreators";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -70,6 +70,4 @@ function mapDispatchToProps(dispatch: any): IArticleActionProps {
     removeArticle: (id: number) => dispatch(remove(id)),
   };
 }
-const mapDispatch = {};
-
 export default connect(mapStateToProps, mapDispatchToProps)(App);
