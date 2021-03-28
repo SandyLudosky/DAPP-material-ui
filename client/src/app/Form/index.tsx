@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { useFormValidation } from "../../hooks/useFormValidation";
 import { add } from "../../lib/actions/articles/actionCreators";
@@ -32,14 +32,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mapDispatch = {
-  addArticle: (article: IArticleInput) => add(article),
-};
-const connector = connect(null, mapDispatch);
-type PropsFromRedux = ConnectedProps<typeof connector>;
+interface IArticleActionProps {
+  addArticle: (article: IArticleInput) => (article: IArticleInput) => any;
+}
 
-const Form = ({ addArticle }: PropsFromRedux) => {
+const Form = ({ addArticle }: IArticleActionProps) => {
   const classes = useStyles();
+  const titleRef: React.MutableRefObject<undefined> = useRef();
+  const titleElement = (titleRef.current as unknown) as HTMLInputElement;
+  const contentRef: React.MutableRefObject<undefined> = useRef();
+  const contentElement = (contentRef.current as unknown) as HTMLInputElement;
   const initialValues = {
     title: null,
     content: null,
@@ -57,10 +59,14 @@ const Form = ({ addArticle }: PropsFromRedux) => {
     e.preventDefault();
     const newArticle: IArticleInput = { date: `${new Date()}`, ...article };
     addArticle(newArticle);
+    setArticle({ ...initialValues });
+    titleElement.value = "";
+    contentElement.value = "";
   };
   useEffect(() => {
     validate(article);
   }, [article, validate]);
+
   return (
     <div className={classes.paper}>
       <Typography component="h1" variant="h5" className={classes.border}>
@@ -70,6 +76,7 @@ const Form = ({ addArticle }: PropsFromRedux) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
+              inputRef={titleRef}
               onChange={handleOnChange}
               variant="outlined"
               required
@@ -77,10 +84,12 @@ const Form = ({ addArticle }: PropsFromRedux) => {
               id="title"
               label="Title"
               name="title"
+              value={article.title}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
+              inputRef={contentRef}
               onChange={handleOnChange}
               variant="outlined"
               required
@@ -90,6 +99,7 @@ const Form = ({ addArticle }: PropsFromRedux) => {
               id="content"
               label="Your article"
               name="content"
+              value={article.content}
             />
           </Grid>
         </Grid>
@@ -107,4 +117,10 @@ const Form = ({ addArticle }: PropsFromRedux) => {
     </div>
   );
 };
-export default connector(Form);
+
+function mapDispatchToProps(dispatch: any): IArticleActionProps {
+  return {
+    addArticle: (article: IArticleInput) => dispatch(add(article)),
+  };
+}
+export default connect(null, mapDispatchToProps)(Form);
